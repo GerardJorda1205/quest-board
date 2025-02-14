@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic meta tags for character encoding and responsive viewport -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Guild Quest Board</title>
+    <!-- Import medieval-style fonts from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Almendra:ital,wght@0,400;0,700;1,400&family=Metamorphous&display=swap" rel="stylesheet">
+    <style>
+        /* Base body styles with medieval dark wood background */
+        body {
+            /* Commented out background image for now */
+            /* background-image: url('https://i.imgur.com/medieval-tavern.jpg'); */
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Almendra', serif;
+            color: #d4b483; /* Warm beige text color */
+            margin: 0;
+            padding: 20px;
+            background-color: #2c1810; /* Dark wood brown */
+        }
+
+        /* Main quest board container with wooden texture effect */
+        .quest-board {
+            /* Complex background with three layers:
+               1. Vertical wood grain stripes
+               2. Horizontal subtle texture lines
+               3. Lighting gradient overlay */
+            background: repeating-linear-gradient(
+                90deg,
+                #a67c52,
+                #a67c52 50px,
+                #8b5a2b 50px,
+                #8b5a2b 55px
+            ),
+            repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 2px,
+                transparent 2px,
+                transparent 4px
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0) 30%,
+                rgba(0, 0, 0, 0.2) 70%,
+                rgba(0, 0, 0, 0.1)
+            );
+            background-size: 100% 100px, 100% 10px, 100% 100%;
+            border: 25px solid #251209;
+            /* Wooden frame image border (currently disabled) */
+            /* border-image: url('https://i.imgur.com/wood-frame.jpg') 40 round; */
+            border-radius: 15px;
+            padding: 40px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        /* Ensure board contents stay above background effects */
+        .quest-board > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Main title styling */
+        .board-title {
+            text-align: center;
+            font-size: 3.5em;
+            margin-bottom: 35px;
+            color: #c9a66b;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            font-family: 'MedievalSharp', cursive;
+            letter-spacing: 2px;
+        }
+
+        /* Grid layout for quest cards */
+        .quest-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        /* Individual quest card styling */
+        .quest-card {
+            background: #fff9f0; /* Light parchment color */
+            padding: 25px;
+            border: none;
+            border-radius: 2px;
+            color: #2c1810;
+            /* Random slight rotation for each card */
+            transform: rotate(calc(2deg * (var(--rotation, 0))));
+            transition: all 0.4s ease;
+            box-shadow: 8px 8px 20px rgba(0,0,0,0.4);
+            position: relative;
+            font-family: 'Almendra', serif;           
+            /* Create torn paper effect with polygon clipping */
+            clip-path: polygon(
+                0% 3%, 
+                5% 0%,
+                95% 2%, 
+                100% 5%,
+                98% 95%,
+                95% 100%,
+                5% 98%,
+                2% 95%,
+                3% 15%,
+                0% 10%
+            );
+        }
+
+        /* Add subtle paper texture to cards */
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Multiple gradients for cross-hatched texture effect */
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.02) 3px, transparent 3px),
+                repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,0.02) 3px, transparent 3px),
+                linear-gradient(90deg, rgba(0,0,0,0.01), transparent 50%, rgba(0,0,0,0.01));
+            pointer-events: none;
+        }
+
+        /* Add decorative pin/nail at top of cards */
+        .quest-card::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #8b4513 20%, transparent 20%);
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+        }
+
+        /* Hover effects for cards */
+        .quest-card:hover {
+            transform: rotate(0deg) scale(1.03);
+            z-index: 2;
+            box-shadow: 12px 12px 25px rgba(0,0,0,0.5),
+                        inset 0 0 15px rgba(0,0,0,0.03);
+        }
+
+        /* Quest description text styling */
+        .quest-card p {
+            font-weight: 600;
+        }
+
+        /* Quest title styling */
+        .quest-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #4a2511;
+            text-decoration: none;
+            border-bottom: 2px solid #8b4513;
+            padding-bottom: 8px;
+            font-family: 'Metamorphous', cursive;
+        }
+
+        /* Quest reward box styling */
+        .quest-reward {
+            color: #8b4513;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #8b4513;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+            font-family: 'MedievalSharp', cursive;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main quest board container -->
+    <div class="quest-board">
+        <h1 class="board-title">Adventure Guild Quest Board</h1>
+        
+        <!-- Grid container for quest cards -->
+        <div class="quest-list">
+            <!-- High-reward dragon slaying quest -->
+            <div class="quest-card" style="--rotation: -1">
+                <div class="quest-title">Slay the Dragon of Red Mountain</div>
+                <p>A fearsome dragon has been terrorizing the nearby villages. Brave adventurers needed!</p>
+                <div class="quest-reward">Reward: 1000 gold pieces</div>
+            </div>
+
+            <!-- Missing caravan investigation quest -->
+            <div class="quest-card" style="--rotation: 1">
+                <div class="quest-title">Missing Merchant's Caravan</div>
+                <p>Find the lost merchant caravan that disappeared in the Dark Woods three days ago.</p>
+                <div class="quest-reward">Reward: 500 gold pieces</div>
+            </div>
+
+            <!-- Undead clearing quest -->
+            <div class="quest-card" style="--rotation: -2">
+                <div class="quest-title">Clear the Haunted Crypt</div>
+                <p>The local cemetery's crypt has been overtaken by undead. Clear them out!</p>
+                <div class="quest-reward">Reward: 750 gold pieces</div>
+            </div>
+
+            <!-- Herb gathering quest -->
+            <div class="quest-card" style="--rotation: 2">
+                <div class="quest-title">The Witch's Request</div>
+                <p>Gather rare herbs from the Misty Mountains for the local witch's brewing.</p>
+                <div class="quest-reward">Reward: 300 gold pieces</div>
+            </div>
+
+            <!-- Goblin pest control quest -->
+            <div class="quest-card" style="--rotation: -1">
+                <div class="quest-title">Goblin Raiders</div>
+                <p>A band of goblins has been raiding farm supplies. Put a stop to their mischief!</p>
+                <div class="quest-reward">Reward: 400 gold pieces</div>
+            </div>
+
+            <!-- Lost item recovery quest -->
+            <div class="quest-card" style="--rotation: 1">
+                <div class="quest-title">Lost Family Heirloom</div>
+                <p>Noble family seeks adventurer to recover their ancestral sword from ancient ruins.</p>
+                <div class="quest-reward">Reward: 800 gold pieces</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
